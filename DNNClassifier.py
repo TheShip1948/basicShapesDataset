@@ -234,83 +234,24 @@ print("Stacking X_test shape: {}".format(X_test.shape))
 print("Stacking y_test shape: {}".format(y_test.shape))
 
 
-
-"""
-###########################################
+################################################
 # --- Fixed seed number for reproducibility --- 
-###########################################
-print('Log: start seed definition')
+################################################
 seed = 7 
 numpy.random.seed(seed)
-print('Log: end seed definition')
-
-
-###########################################
-# --- Convert color images into gray ones --- 
-###########################################
-"""
-"""
-print('Log: start training images conversion')
-timer.StartTime()
-X_train_gray = numpy.ndarray(shape=(32, 32))
-# for imageIndex in range(0, X_train.shape[0]): 
-# TODO: handling the dimension of the numpy array is pretty bad, find a better solution 
-# TODO: numpy create an initial record, I need to remove it 
-# TODO: modify the sample size to 10000
-X_training_sample_size = 10
-for imageIndex in range(0, X_training_sample_size): 
-	img = Image.fromarray(X_train[imageIndex])
-	img = img.convert('1')
-	X_train_gray = numpy.dstack([X_train_gray, img])
-	print("Log: training image number = {}".format(imageIndex))
-X_train_gray = numpy.swapaxes(X_train_gray, 1, 2)
-X_train_gray = numpy.swapaxes(X_train_gray, 0, 1)
-timer.EndTime()
-timer.DeltaTime() 
-print('Log: end training image conversion') 
-print('Log: start testing image conversion')
-timer.StartTime()
-X_test_gray = numpy.ndarray(shape=(32, 32))
-#for imageIndex in range(0, X_test.shape[0]):
-# TODO: apply training modifications here
-# TODO: code is similar may need to put in a function 
-# TODO: the function may be generic enough to put outside the code 
-# TODO: think of a library of utilities to be on git-hub   
-for imageIndex in range(0, X_training_sample_size/5): 
-	img = Image.fromarray(X_test[imageIndex])
-	img = img.convert('1')
-	X_test_gray = numpy.dstack([X_test_gray, img])
-	print("Log: testing image number = {}".format(imageIndex))
-X_test_gray = numpy.swapaxes(X_test_gray, 1, 2)	
-X_test_gray = numpy.swapaxes(X_test_gray, 0, 1)
-timer.EndTime()     
-timer.DeltaTime()
-print('Log: end testing image conversion')
-print('Log: start input manipulation')
-timer.StartTime()
-print('Log: X_test_gray = {}'.format(X_test_gray))
-"""
-
-"""
-###########################################
-# --- Extract a sample ---
-###########################################
-training_sample_size = 10000
-X_train = X_train[0:training_sample_size]
-y_train = y_train[0:training_sample_size]
-
-X_test  = X_test[0:training_sample_size/5]
-y_test  = y_test[0:training_sample_size/5]
 
 
 ###########################################
 # --- Flatten Input ---
 ###########################################
-num_pixels = X_train.shape[1]*X_train.shape[2]*X_train.shape[3]
+num_pixels = X_train.shape[1]*X_train.shape[2]
 print ("num_pixels = {}".format(num_pixels))
 X_train = X_train.reshape(X_train.shape[0], num_pixels).astype('float32')
 X_test  = X_test.reshape(X_test.shape[0], num_pixels).astype('float32')
+print("X_train shape: {}".format(X_train.shape))
+print("X_train shape: {}".format(X_train.shape))
 
+"""
 ###########################################
 # --- Normalization --- 
 ###########################################
