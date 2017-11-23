@@ -98,6 +98,8 @@ y_train_triangle = np.full((X_train_triangle.shape[0]), shapeValueDict['Triangle
 # Arc
 X_train_arc = LoadPathImages('Data/TrainingSet/OpenShapes/Arc/*.bmp')
 y_train_arc = np.full((X_train_arc.shape[0]), shapeValueDict['Arc']) 
+print("Arc X_train shape {}".format(X_train_arc.shape))
+print("Arc y_train shape {}".format(y_train_arc.shape))
  
 # Arrow 
 X_train_arrow = LoadPathImages('Data/TrainingSet/OpenShapes/Arrow/*.bmp')
@@ -166,6 +168,71 @@ y_test_line = np.full((X_test_line.shape[0]), shapeValueDict['Line'])
 # Zigzag
 X_test_zigzag = LoadPathImages('Data/TestSet/OpenShapes/Zigzag/*.bmp')
 y_test_zigzag = np.full((X_test_zigzag.shape[0]), shapeValueDict['Zigzag']) 
+
+####################################################
+# --- Compile training data into single array  --- 
+####################################################
+# --- Closed shapes --- 
+X_train = np.vstack((X_train_circle, X_train_diamond))
+y_train = np.concatenate((y_train_circle, y_train_diamond))
+
+X_train = np.vstack((X_train, X_train_ellipse))
+y_train = np.concatenate((y_train, y_train_ellipse))
+
+X_train = np.vstack((X_train, X_train_rectangle))
+y_train = np.concatenate((y_train, y_train_rectangle))
+
+X_train = np.vstack((X_train, X_train_triangle))
+y_train = np.concatenate((y_train, y_train_triangle))
+
+# --- Open shapes --- 
+X_train = np.vstack((X_train, X_train_arc))
+y_train = np.concatenate((y_train, y_train_arc))
+
+X_train = np.vstack((X_train, X_train_arrow))
+y_train = np.concatenate((y_train, y_train_arrow))
+
+X_train = np.vstack((X_train, X_train_line))
+y_train = np.concatenate((y_train, y_train_line))
+
+X_train = np.vstack((X_train, X_train_zigzag))
+y_train = np.concatenate((y_train, y_train_zigzag))
+
+print("Stacking X_train shape: {}".format(X_train.shape))
+print("Stacking y_train shape: {}".format(y_train.shape))
+
+####################################################
+# --- Compile testing data into single array  --- 
+####################################################
+# --- Closed shapes --- 
+X_test = np.vstack((X_test_circle, X_test_diamond))
+y_test = np.concatenate((y_test_circle, y_test_diamond))
+
+X_test = np.vstack((X_test, X_test_ellipse))
+y_test = np.concatenate((y_test, y_test_ellipse))
+
+X_test = np.vstack((X_test, X_test_rectangle))
+y_test = np.concatenate((y_test, y_test_rectangle))
+
+X_test = np.vstack((X_test, X_test_triangle))
+y_test = np.concatenate((y_test, y_test_triangle))
+
+# --- Open shapes --- 
+X_test = np.vstack((X_test, X_test_arc))
+y_test = np.concatenate((y_test, y_test_arc))
+
+X_test = np.vstack((X_test, X_test_arrow))
+y_test = np.concatenate((y_test, y_test_arrow))
+
+X_test = np.vstack((X_test, X_test_line))
+y_test = np.concatenate((y_test, y_test_line))
+
+X_test = np.vstack((X_test, X_test_zigzag))
+y_test = np.concatenate((y_test, y_test_zigzag))
+
+print("Stacking X_test shape: {}".format(X_test.shape))
+print("Stacking y_test shape: {}".format(y_test.shape))
+
 
 
 """
