@@ -13,13 +13,19 @@
 # --- Imports ---
 ###########################################
 # from keras.datasets import cifar10
-from keras.utils    import np_utils 
+from keras.utils    		 import np_utils 
 import numpy as np 
-from keras.models   import Sequential 
-from keras.layers   import Dense 
+from keras.models   		 import Sequential 
+from keras.layers   		 import Dense 
+from keras.layers   		 import Dropout
+from keras.layers.convolutional  import Convolution2D
+from keras.layers.convolutional  import MaxPooling2D
+from keras.layers		 import Flatten
 import matplotlib.pyplot as plt 
 import glob 
-from PIL            import Image
+from PIL            		 import Image
+from keras          		 import metrics
+from skimage.transform 		 import resize
 
 
 ###########################################
@@ -172,31 +178,33 @@ y_test_zigzag = np.full((X_test_zigzag.shape[0]), shapeValueDict['Zigzag'])
 ####################################################
 # --- Compile training data into single array  --- 
 ####################################################
+training_sample_size = 249
+
 # --- Closed shapes --- 
-X_train = np.vstack((X_train_circle, X_train_diamond))
-y_train = np.concatenate((y_train_circle, y_train_diamond))
+X_train = np.vstack((X_train_circle[0:training_sample_size], X_train_diamond[0:training_sample_size]))
+y_train = np.concatenate((y_train_circle[0:training_sample_size], y_train_diamond[0:training_sample_size]))
 
-X_train = np.vstack((X_train, X_train_ellipse))
-y_train = np.concatenate((y_train, y_train_ellipse))
+X_train = np.vstack((X_train, X_train_ellipse[0:training_sample_size]))
+y_train = np.concatenate((y_train, y_train_ellipse[0:training_sample_size]))
 
-X_train = np.vstack((X_train, X_train_rectangle))
-y_train = np.concatenate((y_train, y_train_rectangle))
+X_train = np.vstack((X_train, X_train_rectangle[0:training_sample_size]))
+y_train = np.concatenate((y_train, y_train_rectangle[0:training_sample_size]))
 
-X_train = np.vstack((X_train, X_train_triangle))
-y_train = np.concatenate((y_train, y_train_triangle))
+X_train = np.vstack((X_train, X_train_triangle[0:training_sample_size]))
+y_train = np.concatenate((y_train, y_train_triangle[0:training_sample_size]))
 
 # --- Open shapes --- 
-X_train = np.vstack((X_train, X_train_arc))
-y_train = np.concatenate((y_train, y_train_arc))
+X_train = np.vstack((X_train, X_train_arc[0:training_sample_size]))
+y_train = np.concatenate((y_train, y_train_arc[0:training_sample_size]))
 
-X_train = np.vstack((X_train, X_train_arrow))
-y_train = np.concatenate((y_train, y_train_arrow))
+X_train = np.vstack((X_train, X_train_arrow[0:training_sample_size]))
+y_train = np.concatenate((y_train, y_train_arrow[0:training_sample_size]))
 
-X_train = np.vstack((X_train, X_train_line))
-y_train = np.concatenate((y_train, y_train_line))
+X_train = np.vstack((X_train, X_train_line[0:training_sample_size]))
+y_train = np.concatenate((y_train, y_train_line[0:training_sample_size]))
 
-X_train = np.vstack((X_train, X_train_zigzag))
-y_train = np.concatenate((y_train, y_train_zigzag))
+X_train = np.vstack((X_train, X_train_zigzag[0:training_sample_size]))
+y_train = np.concatenate((y_train, y_train_zigzag[0:training_sample_size]))
 
 print("Stacking X_train shape: {}".format(X_train.shape))
 print("Stacking y_train shape: {}".format(y_train.shape))
@@ -204,60 +212,77 @@ print("Stacking y_train shape: {}".format(y_train.shape))
 ####################################################
 # --- Compile testing data into single array  --- 
 ####################################################
+testing_sample_size  = 122
+
 # --- Closed shapes --- 
-X_test = np.vstack((X_test_circle, X_test_diamond))
-y_test = np.concatenate((y_test_circle, y_test_diamond))
+X_test = np.vstack((X_test_circle[0:testing_sample_size], X_test_diamond[0:testing_sample_size]))
+y_test = np.concatenate((y_test_circle[0:testing_sample_size], y_test_diamond[0:testing_sample_size]))
 
-X_test = np.vstack((X_test, X_test_ellipse))
-y_test = np.concatenate((y_test, y_test_ellipse))
+X_test = np.vstack((X_test, X_test_ellipse[0:testing_sample_size]))
+y_test = np.concatenate((y_test, y_test_ellipse[0:testing_sample_size]))
 
-X_test = np.vstack((X_test, X_test_rectangle))
-y_test = np.concatenate((y_test, y_test_rectangle))
+X_test = np.vstack((X_test, X_test_rectangle[0:testing_sample_size]))
+y_test = np.concatenate((y_test, y_test_rectangle[0:testing_sample_size]))
 
-X_test = np.vstack((X_test, X_test_triangle))
-y_test = np.concatenate((y_test, y_test_triangle))
+X_test = np.vstack((X_test, X_test_triangle[0:testing_sample_size]))
+y_test = np.concatenate((y_test, y_test_triangle[0:testing_sample_size]))
 
 # --- Open shapes --- 
-X_test = np.vstack((X_test, X_test_arc))
-y_test = np.concatenate((y_test, y_test_arc))
+X_test = np.vstack((X_test, X_test_arc[0:testing_sample_size]))
+y_test = np.concatenate((y_test, y_test_arc[0:testing_sample_size]))
 
-X_test = np.vstack((X_test, X_test_arrow))
-y_test = np.concatenate((y_test, y_test_arrow))
+X_test = np.vstack((X_test, X_test_arrow[0:testing_sample_size]))
+y_test = np.concatenate((y_test, y_test_arrow[0:testing_sample_size]))
 
-X_test = np.vstack((X_test, X_test_line))
-y_test = np.concatenate((y_test, y_test_line))
+X_test = np.vstack((X_test, X_test_line[0:testing_sample_size]))
+y_test = np.concatenate((y_test, y_test_line[0:testing_sample_size]))
 
-X_test = np.vstack((X_test, X_test_zigzag))
-y_test = np.concatenate((y_test, y_test_zigzag))
+X_test = np.vstack((X_test, X_test_zigzag[0:testing_sample_size]))
+y_test = np.concatenate((y_test, y_test_zigzag[0:testing_sample_size]))
 
 print("Stacking X_test shape: {}".format(X_test.shape))
 print("Stacking y_test shape: {}".format(y_test.shape))
+
+################################################
+# --- Image Preprocessing --- 
+################################################
+# Resize images 
+img_row_pixel_count = 50
+img_col_pixel_count = 50
+
+X_train_resized = np.array([np.array(resize(X_train[imageIndex], (img_row_pixel_count, img_col_pixel_count))) for imageIndex in range(X_train.shape[0])])
+print("X_train_resized shape: {}".format(X_train_resized.shape))
+X_test_resized = np.array([np.array(resize(X_test[imageIndex], (img_row_pixel_count, img_col_pixel_count))) for imageIndex in range(X_test.shape[0])])
+print("X_test_resized shape: {}".format(X_test_resized.shape))
 
 
 ################################################
 # --- Fixed seed number for reproducibility --- 
 ################################################
 seed = 7 
-numpy.random.seed(seed)
+np.random.seed(seed)
 
 
 ###########################################
 # --- Flatten Input ---
 ###########################################
-num_pixels = X_train.shape[1]*X_train.shape[2]
-print ("num_pixels = {}".format(num_pixels))
-X_train = X_train.reshape(X_train.shape[0], num_pixels).astype('float32')
-X_test  = X_test.reshape(X_test.shape[0], num_pixels).astype('float32')
-print("X_train shape: {}".format(X_train.shape))
-print("X_train shape: {}".format(X_train.shape))
-
 """
+num_pixels = X_train_resized.shape[1]*X_train_resized.shape[2]
+print ("num_pixels = {}".format(num_pixels))
+X_train_resized = X_train_resized.reshape(X_train_resized.shape[0], num_pixels).astype('float32')
+X_test_resized  = X_test_resized.reshape(X_test_resized.shape[0], num_pixels).astype('float32')
+print("X_train_resized shape: {}".format(X_train_resized.shape))
+print("X_train_resized shape: {}".format(X_train_resized.shape))
+"""
+
 ###########################################
 # --- Normalization --- 
 ###########################################
+X_train_resized = X_train_resized.astype('float32')
+X_test_resized  = X_test_resized.astype('float32')
 
-X_train = X_train/255 
-X_test  = X_test/255 
+X_train_resized = X_train_resized/255 
+X_test_resized  = X_test_resized/255 
 
 
 ###########################################
@@ -266,17 +291,37 @@ X_test  = X_test/255
 y_train     = np_utils.to_categorical(y_train)
 y_test      = np_utils.to_categorical(y_test) 
 num_classes = y_test.shape[1]
+print("num classes: {}".format(num_classes))
 
+# --- Reshape input --- 
+X_train_resized = X_train_resized.reshape(X_train_resized.shape[0], 1, X_train_resized.shape[1], X_train_resized.shape[2])
+X_test_resized = X_test_resized.reshape(X_test_resized.shape[0], 1, X_test_resized.shape[1], X_test_resized.shape[2])
 ###########################################
 # --- Define baseline model ---
 ###########################################
 def baseline_model(): 
 	# Create model 
 	model = Sequential()
-	model.add(Dense(num_pixels, input_dim=num_pixels, init='normal', activation='relu'))
-	model.add(Dense(num_classes, init='normal', activation='softmax'))
+	# model.add(Dense(num_pixels/8, input_dim=num_pixels, init='normal', activation='relu'))
+	# model.add(Dense(2500, input_dim=num_pixels, init='normal', activation='relu'))
+	#model.add(Dense(50,  init='normal', activation='relu'))
+	# model.add(Dropout(0.2))
+	# model.add(Dense(500, input_dim=num_pixels, init='normal', activation='relu'))
+	# model.add(Dropout(0.2))
+	# model.add(Dense(200, input_dim=num_pixels, init='normal', activation='relu'))
+	# model.add(Dropout(0.2))	
+	# model.add(Dense(num_classes, init='normal', activation='softmax'))
+	# model.add(Convolution2D(32, 3, 3, input_shape=(3, 32, 32), border_mode='same', activation='relu'))
+	model.add(Convolution2D(32, 3, 3, input_shape=(1, 50, 50), border_mode='same', activation='relu'))
+	model.add(Dropout(0.2))
+	#model.add(Convolution2D(32, 3, 3, input_shape=(1, 50, 50), border_mode='same', activation='relu'))
+	model.add(MaxPooling2D(pool_size=(2,2), dim_ordering='th'))
+	model.add(Flatten())
+	# model.add(Dense(512, activation='relu'))
+	# model.add(Dropout(0.5))
+	model.add(Dense(num_classes, activation='softmax'))
 	# Compile model 
-	model.compile(loss='categorical_crossentropy', optimizer='sgd', metrics=['accuracy']) 
+	model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=[metrics.categorical_accuracy]) 
 	return model
 
 
@@ -289,12 +334,12 @@ model = baseline_model()
 ###########################################
 # --- Fit the model ---
 ###########################################
-model.fit(X_train, y_train, validation_data=(X_test, y_test), nb_epoch=10, batch_size=200, verbose=2)
+model.fit(X_train_resized, y_train, validation_data=(X_test_resized, y_test), nb_epoch=300, batch_size=32, verbose=2)
 
 
 ###########################################
 # --- Final evaluation ---
 ###########################################
-scores = model.evaluate(X_test, y_test, verbose=0) 
+scores = model.evaluate(X_test_resized, y_test, verbose=0) 
 print('Log: score = {} %'.format(scores))
-"""
+
