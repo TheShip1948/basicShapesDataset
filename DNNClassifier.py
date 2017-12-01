@@ -349,11 +349,7 @@ grid_result = grid.fit(X_train_resized, y_train)
 ###########################################
 # --- Final evaluation ---
 ###########################################
-# scores = model.evaluate(X_test_resized, y_test, verbose=0) 
-# print('Log: score = {} %'.format(scores))
-
-print("Best: %f using %s" % (grid_result.best_score_, grid_result.best_params_))
-for params, mean_score, scores in grid_result.grid_scores_:
-	print("%f (%f) with: %r" % (scores.mean(), scores.std(), params))
+scores = model.evaluate(X_test_resized, y_test, verbose=0) 
+print('Log: score = {} %'.format(scores))
 
 
