@@ -27,10 +27,6 @@ from PIL            		 import Image
 from keras          		 import metrics
 from skimage.transform 		 import resize
 
-# For grid search in hyper-parameters
-from keras.wrappers.scikit_learn import KerasClassifier
-from sklearn.model_selection import GridSearchCV
-
 ###########################################
 # --- Load data --- 
 ###########################################
@@ -285,11 +281,6 @@ X_test_resized  = X_test_resized.astype('float32')
 X_train_resized = X_train_resized/255 
 X_test_resized  = X_test_resized/255 
 
-# Shift around zero 
-# X_train_resized = X_train_resized + 0.5 
-# X_test_resized  = X_test_resized + 0.5 
-
-
 ###########################################
 # --- One hot encoding --- 
 ###########################################
@@ -332,19 +323,12 @@ def baseline_model(init='normal'):
 ###########################################
 # --- Build the model ---
 ###########################################
-# model = baseline_model() 
-model = KerasClassifier(build_fn=baseline_model, verbose=0)
-
-# Grid search parameters initialization 
-init = ['normal' , 'uniform', 'he_normal', 'zeros', 'ones']
-param_grid = dict(init=init)
-grid = GridSearchCV(estimator=model, param_grid=param_grid)
+model = baseline_model() 
 
 ###########################################
 # --- Fit the model ---
 ###########################################
-# model.fit(X_train_resized, y_train, validation_data=(X_test_resized, y_test), nb_epoch=100, batch_size=32, verbose=2)
-grid_result = grid.fit(X_train_resized, y_train)
+model.fit(X_train_resized, y_train, validation_data=(X_test_resized, y_test), nb_epoch=100, batch_size=32, verbose=2)
 
 ###########################################
 # --- Final evaluation ---
