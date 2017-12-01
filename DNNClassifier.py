@@ -28,8 +28,8 @@ from keras          		 import metrics
 from skimage.transform 		 import resize
 
 # For grid search in hyper-parameters
-# from keras.wrappers.scikit_learn import KerasClassifier
-# from sklearn.model_selection import GridSearchCV
+from keras.wrappers.scikit_learn import KerasClassifier
+from sklearn.model_selection import GridSearchCV
 
 ###########################################
 # --- Load data --- 
@@ -302,7 +302,7 @@ print("num classes: {}".format(num_classes))
 ###########################################
 # --- Define baseline model ---
 ###########################################
-def baseline_model(init='ones'): 
+def baseline_model(init='normal'): 
 	# Create model 
 	model = Sequential()
 	model.add(Dense(num_pixels, input_dim=num_pixels, init=init, activation='relu'))
@@ -332,22 +332,28 @@ def baseline_model(init='ones'):
 ###########################################
 # --- Build the model ---
 ###########################################
-model = baseline_model() 
-# model = KerasClassifier(build_fn=baseline_model, verbose=0)
+# model = baseline_model() 
+model = KerasClassifier(build_fn=baseline_model, verbose=0)
 
 # Grid search parameters initialization 
-# init = ['normal' , 'uniform', 'he_normal', 'zeros', 'ones']
-# param_grid = dict(init=init)
-# grid = GridSearchCV(estimator=model, param_grid=param_grid)
+init = ['normal' , 'uniform', 'he_normal', 'zeros', 'ones']
+param_grid = dict(init=init)
+grid = GridSearchCV(estimator=model, param_grid=param_grid)
 
 ###########################################
 # --- Fit the model ---
 ###########################################
-model.fit(X_train_resized, y_train, validation_data=(X_test_resized, y_test), nb_epoch=100, batch_size=32, verbose=2)
+# model.fit(X_train_resized, y_train, validation_data=(X_test_resized, y_test), nb_epoch=100, batch_size=32, verbose=2)
+grid_result = grid.fit(X_train_resized, y_train)
 
 ###########################################
 # --- Final evaluation ---
 ###########################################
-scores = model.evaluate(X_test_resized, y_test, verbose=0) 
-print('Log: score = {} %'.format(scores))
+# scores = model.evaluate(X_test_resized, y_test, verbose=0) 
+# print('Log: score = {} %'.format(scores))
+
+print("Best: %f using %s" % (grid_result.best_score_, grid_result.best_params_))
+for params, mean_score, scores in grid_result.grid_scores_:
+	print("%f (%f) with: %r" % (scores.mean(), scores.std(), params))
+
 
