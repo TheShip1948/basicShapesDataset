@@ -273,7 +273,6 @@ print ("num_pixels = {}".format(num_pixels))
 X_train_resized = X_train_resized.reshape(X_train_resized.shape[0], num_pixels).astype('float32')
 X_test_resized  = X_test_resized.reshape(X_test_resized.shape[0], num_pixels).astype('float32')
 print("X_train_resized shape: {}".format(X_train_resized.shape))
-print("X_train_resized shape: {}".format(X_train_resized.shape))
 
 
 ###########################################
@@ -302,7 +301,7 @@ print("num classes: {}".format(num_classes))
 ###########################################
 # --- Define baseline model ---
 ###########################################
-def baseline_model(init='normal'): 
+def baseline_model(init='normal', optimizer='adam'): 
 	# Create model 
 	model = Sequential()
 	model.add(Dense(num_pixels, input_dim=num_pixels, init=init, activation='relu'))
@@ -325,7 +324,7 @@ def baseline_model(init='normal'):
 	model.add(Dense(num_classes, activation='softmax'))
 	# Compile model 
 	# model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=[metrics.categorical_accuracy) 
-	model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy']) 	
+	model.compile(loss='categorical_crossentropy', optimizer=optimizer, metrics=['accuracy']) 	
 	return model
 
 
@@ -336,15 +335,32 @@ def baseline_model(init='normal'):
 model = KerasClassifier(build_fn=baseline_model, verbose=0)
 
 # Grid search parameters initialization 
-init = ['normal' , 'uniform', 'he_normal', 'zeros', 'ones']
-param_grid = dict(init=init)
-grid = GridSearchCV(estimator=model, param_grid=param_grid)
-
+# init = ['normal' , 'uniform', 'he_normal', 'zeros', 'ones']
+init = ['normal']
+batch_size = [50]
+nb_epoch = [10] 
+optimizer = ['adam', 'Nadam', 'RMSprop']
+param_grid = dict(init=init, batch_size=batch_size, nb_epoch=nb_epoch, optimizer=optimizer)
+grid = GridSearchCV(estimator=model, param_grid=param_grid, cv=3)
+# grid.n_splits_=2 
+# print("Split count: {}".format(grid.n_splits_)) 
 ###########################################
 # --- Fit the model ---
 ###########################################
 # model.fit(X_train_resized, y_train, validation_data=(X_test_resized, y_test), nb_epoch=100, batch_size=32, verbose=2)
-grid_result = grid.fit(X_train_resized, y_train)
+# grid_result = grid.fit(X_train_resized, y_train, validation_data=(X_test_resized, y_test), nb_epoch=2, batch_size=32, verbose=2)
+# grid_result = grid.fit(X_train_resized, y_train, nb_epoch=5, batch_size=50, verbose=1)
+X = np.vstack((X_train_resized, X_test_resized))
+y = np.concatenate((y_train, y_test))
+
+print("X shape: {}".format(X.shape))
+print("y shape: {}".format(y.shape)) 
+
+# grid_result = grid.fit(X_train_resized[0:3000], y_train[0:3000], nb_epoch=1, verbose=1)
+grid_result = grid.fit(X, y, verbose=1) 
+
+# print("grid results: {}".format(dir(grid_result)))
+# print("Split count: {}".format(grid_result.n_splits_))
 
 ###########################################
 # --- Final evaluation ---
