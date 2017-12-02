@@ -3,9 +3,9 @@
 # --------- 
 # * Apply Dnn Mnist architecture  
 # * Apply ConvNet Mnist architecture 
-# TODO: 
-# ----- 
-# Enhance the image reading code 
+# Experiments: 
+# ------------ 
+# * Image binarization 
 ###############################################################################################
 
 
