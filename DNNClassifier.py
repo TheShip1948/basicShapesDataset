@@ -34,35 +34,6 @@ from sklearn.model_selection import GridSearchCV
 ###########################################
 # --- Load data --- 
 ###########################################
-# (X_train, y_train) , (X_test, y_test) = cifar10.load_data() 
-"""
-img = Image.fromarray(plt.imread("Data/TrainingSet/ClosedShapes/Circle/Cir1.bmp")).convert('1')
-# img = img.convert('1')
-# img = Image.open("Data/TrainingSet/ClosedShapes/Circle/Cir1.bmp").convert('1')
-# img = 
-plt.imshow(img)
-plt.show()
-
-fileList = glob.glob('Data/TrainingSet/ClosedShapes/Circle/*.bmp')
-
-# print ("filelist: {}".format(filelist))
-
-"""
-"""
-for i in range(0, 5):
-	img = plt.imread(filelist[i])	
-	plt.imshow(img)
-	plt.show()
-"""
-"""
-fileList = glob.glob('Data/TrainingSet/ClosedShapes/Circle/*.bmp') 
-# Put in one numpy array 
-X_train = np.array([np.array(Image.fromarray(plt.imread(fileName)).convert('1')) for fileName in fileList])
-
-print("X_train shape: {}".format(X_train.shape))
-"""
-
-
 # --- --- Load Training Set --- --- 
 def LoadPathImages(path): 
 	fileList = glob.glob(path)
@@ -285,6 +256,7 @@ X_train_resized = X_train_resized/255
 X_test_resized  = X_test_resized/255 
 
 # Shift around zero 
+# Experiment that this shift may help initialization to perform better - seems not successful 
 # X_train_resized = X_train_resized + 0.5 
 # X_test_resized  = X_test_resized + 0.5 
 
@@ -306,21 +278,6 @@ def baseline_model(init='normal', optimizer='adam'):
 	model = Sequential()
 	model.add(Dense(num_pixels, input_dim=num_pixels, init=init, activation='relu'))
 	model.add(Dense(2000, input_dim=num_pixels, init=init, activation='relu'))
-	#model.add(Dense(50,  init='normal', activation='relu'))
-	# model.add(Dropout(0.2))
-	# model.add(Dense(500, input_dim=num_pixels, init='normal', activation='relu'))
-	# model.add(Dropout(0.2))
-	# model.add(Dense(200, input_dim=num_pixels, init='normal', activation='relu'))
-	# model.add(Dropout(0.2))	
-	# model.add(Dense(num_classes, init='normal', activation='softmax'))
-	# model.add(Convolution2D(32, 3, 3, input_shape=(3, 32, 32), border_mode='same', activation='relu'))
-	# model.add(Convolution2D(32, 3, 3, input_shape=(1, 50, 50), border_mode='same', activation='relu'))
-	# model.add(Dropout(0.2))
-	# model.add(Convolution2D(32, 3, 3, input_shape=(1, 50, 50), border_mode='same', activation='relu'))
-	# model.add(MaxPooling2D(pool_size=(2,2), dim_ordering='th'))
-	# model.add(Flatten())
-	# model.add(Dense(512, activation='relu'))
-	# model.add(Dropout(0.5))
 	model.add(Dense(num_classes, activation='softmax'))
 	# Compile model 
 	# model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=[metrics.categorical_accuracy) 
@@ -331,7 +288,6 @@ def baseline_model(init='normal', optimizer='adam'):
 ###########################################
 # --- Build the model ---
 ###########################################
-# model = baseline_model() 
 model = KerasClassifier(build_fn=baseline_model, verbose=0)
 
 # Grid search parameters initialization 
@@ -342,8 +298,10 @@ nb_epoch = [10]
 optimizer = ['adam', 'Nadam', 'RMSprop']
 param_grid = dict(init=init, batch_size=batch_size, nb_epoch=nb_epoch, optimizer=optimizer)
 grid = GridSearchCV(estimator=model, param_grid=param_grid, cv=3)
+
 # grid.n_splits_=2 
 # print("Split count: {}".format(grid.n_splits_)) 
+
 ###########################################
 # --- Fit the model ---
 ###########################################
@@ -359,15 +317,13 @@ print("y shape: {}".format(y.shape))
 # grid_result = grid.fit(X_train_resized[0:3000], y_train[0:3000], nb_epoch=1, verbose=1)
 grid_result = grid.fit(X, y, verbose=1) 
 
+# --- results object introspection --- 
 # print("grid results: {}".format(dir(grid_result)))
 # print("Split count: {}".format(grid_result.n_splits_))
 
 ###########################################
 # --- Final evaluation ---
 ###########################################
-# scores = model.evaluate(X_test_resized, y_test, verbose=0) 
-# print('Log: score = {} %'.format(scores))
-
 print("Best: %f using %s" % (grid_result.best_score_, grid_result.best_params_))
 for params, mean_score, scores in grid_result.grid_scores_:
 	print("%f (%f) with: %r" % (scores.mean(), scores.std(), params))
