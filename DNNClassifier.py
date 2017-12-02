@@ -3,9 +3,16 @@
 # --------- 
 # * Apply Dnn Mnist architecture  
 # * Apply ConvNet Mnist architecture 
-# TODO: 
-# ----- 
-# Enhance the image reading code 
+# Experiments: 
+# -------------
+# * 1. Exp: Classifier for only two classes --> this is a problem simplification 
+# * Goal: simplified version for easier investigation 
+# 
+# * 2. Exp: Classifier for only one class versus all others 
+# * Goal: other version of the simplification
+# 
+# * 3. Exp: randomly shuffled data instead of all similar images after each other 
+# * Goal: this may affect algorithm results. Test if the order makes the algorithm biased 
 ###############################################################################################
 
 
@@ -30,35 +37,6 @@ from skimage.transform 		 import resize
 ###########################################
 # --- Load data --- 
 ###########################################
-# (X_train, y_train) , (X_test, y_test) = cifar10.load_data() 
-"""
-img = Image.fromarray(plt.imread("Data/TrainingSet/ClosedShapes/Circle/Cir1.bmp")).convert('1')
-# img = img.convert('1')
-# img = Image.open("Data/TrainingSet/ClosedShapes/Circle/Cir1.bmp").convert('1')
-# img = 
-plt.imshow(img)
-plt.show()
-
-fileList = glob.glob('Data/TrainingSet/ClosedShapes/Circle/*.bmp')
-
-# print ("filelist: {}".format(filelist))
-
-"""
-"""
-for i in range(0, 5):
-	img = plt.imread(filelist[i])	
-	plt.imshow(img)
-	plt.show()
-"""
-"""
-fileList = glob.glob('Data/TrainingSet/ClosedShapes/Circle/*.bmp') 
-# Put in one numpy array 
-X_train = np.array([np.array(Image.fromarray(plt.imread(fileName)).convert('1')) for fileName in fileList])
-
-print("X_train shape: {}".format(X_train.shape))
-"""
-
-
 # --- --- Load Training Set --- --- 
 def LoadPathImages(path): 
 	fileList = glob.glob(path)
@@ -298,21 +276,6 @@ def baseline_model(init='normal'):
 	model = Sequential()
 	model.add(Dense(num_pixels, input_dim=num_pixels, init=init, activation='relu'))
 	model.add(Dense(2000, input_dim=num_pixels, init=init, activation='relu'))
-	#model.add(Dense(50,  init='normal', activation='relu'))
-	# model.add(Dropout(0.2))
-	# model.add(Dense(500, input_dim=num_pixels, init='normal', activation='relu'))
-	# model.add(Dropout(0.2))
-	# model.add(Dense(200, input_dim=num_pixels, init='normal', activation='relu'))
-	# model.add(Dropout(0.2))	
-	# model.add(Dense(num_classes, init='normal', activation='softmax'))
-	# model.add(Convolution2D(32, 3, 3, input_shape=(3, 32, 32), border_mode='same', activation='relu'))
-	# model.add(Convolution2D(32, 3, 3, input_shape=(1, 50, 50), border_mode='same', activation='relu'))
-	# model.add(Dropout(0.2))
-	# model.add(Convolution2D(32, 3, 3, input_shape=(1, 50, 50), border_mode='same', activation='relu'))
-	# model.add(MaxPooling2D(pool_size=(2,2), dim_ordering='th'))
-	# model.add(Flatten())
-	# model.add(Dense(512, activation='relu'))
-	# model.add(Dropout(0.5))
 	model.add(Dense(num_classes, activation='softmax'))
 	# Compile model 
 	# model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=[metrics.categorical_accuracy) 
