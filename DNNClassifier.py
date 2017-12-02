@@ -49,6 +49,7 @@ shapeValueDict = {"Circle": 0,  "Diamond":1 ,"Ellipse":2 ,"Rectangle":3 , "Trian
 # ---------------------
 # --- Closed shapes --- 
 # ---------------------
+"""
 # Circle 
 X_train_circle = LoadPathImages('Data/TrainingSet/ClosedShapes/Circle/*.bmp')
 y_train_circle = np.full((X_train_circle.shape[0]), shapeValueDict['Circle']) 
@@ -106,12 +107,13 @@ y_train_line = np.full((X_train_line.shape[0]), shapeValueDict['Line'])
 # Zigzag
 X_train_zigzag = LoadPathImages('Data/TrainingSet/OpenShapes/Zigzag/*.bmp')
 y_train_zigzag = np.full((X_train_zigzag.shape[0]), shapeValueDict['Zigzag']) 
-
+""" 
 # --- --- Load Test Set --- --- 
 
 # ---------------------
 # --- Closed shapes --- 
 # ---------------------
+"""
 # Circle 
 X_test_circle = LoadPathImages('Data/TestSet/ClosedShapes/Circle/*.bmp')
 # X_test_circle = LoadPathImages_1('Data/TestSet/ClosedShapes/Circle/*.bmp')
@@ -151,16 +153,17 @@ y_test_line = np.full((X_test_line.shape[0]), shapeValueDict['Line'])
 # Zigzag
 X_test_zigzag = LoadPathImages('Data/TestSet/OpenShapes/Zigzag/*.bmp')
 y_test_zigzag = np.full((X_test_zigzag.shape[0]), shapeValueDict['Zigzag']) 
-
+""" 
 ####################################################
 # --- Compile training data into single array  --- 
 ####################################################
 training_sample_size = 249
 
 # --- Closed shapes --- 
+"""
 X_train = np.vstack((X_train_circle[0:training_sample_size], X_train_diamond[0:training_sample_size]))
 y_train = np.concatenate((y_train_circle[0:training_sample_size], y_train_diamond[0:training_sample_size]))
-
+ 
 X_train = np.vstack((X_train, X_train_ellipse[0:training_sample_size]))
 y_train = np.concatenate((y_train, y_train_ellipse[0:training_sample_size]))
 
@@ -182,9 +185,9 @@ y_train = np.concatenate((y_train, y_train_line[0:training_sample_size]))
 
 X_train = np.vstack((X_train, X_train_zigzag[0:training_sample_size]))
 y_train = np.concatenate((y_train, y_train_zigzag[0:training_sample_size]))
-
-print("Stacking X_train shape: {}".format(X_train.shape))
-print("Stacking y_train shape: {}".format(y_train.shape))
+""" 
+# print("Stacking X_train shape: {}".format(X_train.shape))
+# print("Stacking y_train shape: {}".format(y_train.shape))
 
 ####################################################
 # --- Compile testing data into single array  --- 
@@ -192,6 +195,7 @@ print("Stacking y_train shape: {}".format(y_train.shape))
 testing_sample_size  = 122
 
 # --- Closed shapes --- 
+"""
 X_test = np.vstack((X_test_circle[0:testing_sample_size], X_test_diamond[0:testing_sample_size]))
 y_test = np.concatenate((y_test_circle[0:testing_sample_size], y_test_diamond[0:testing_sample_size]))
 
@@ -216,9 +220,86 @@ y_test = np.concatenate((y_test, y_test_line[0:testing_sample_size]))
 
 X_test = np.vstack((X_test, X_test_zigzag[0:testing_sample_size]))
 y_test = np.concatenate((y_test, y_test_zigzag[0:testing_sample_size]))
+"""
+# print("Stacking X_test shape: {}".format(X_test.shape))
+# print("Stacking y_test shape: {}".format(y_test.shape))
 
-print("Stacking X_test shape: {}".format(X_test.shape))
-print("Stacking y_test shape: {}".format(y_test.shape))
+################################################
+# --- Experimental Data --- 
+################################################
+
+# ---------------------
+# --- Closed shapes --- 
+# ---------------------
+
+# Circle 
+X_train_circle = LoadPathImages('Data/TrainingSet/ClosedShapes/Circle/*.bmp')
+y_train_circle = np.full((X_train_circle.shape[0]), shapeValueDict['Circle']) 
+
+# Diamond 
+# X_train_diamond = LoadPathImages('Data/TrainingSet/ClosedShapes/Diamond/*.bmp')
+# y_train_diamond = np.full((X_train_diamond.shape[0]), shapeValueDict['Diamond']) 
+
+# -------------------
+# --- Open shapes --- 
+# ------------------- 
+# Arc
+# X_train_arc = LoadPathImages('Data/TrainingSet/OpenShapes/Arc/*.bmp')
+# y_train_arc = np.full((X_train_arc.shape[0]), shapeValueDict['Arc']) 
+ 
+# Arrow 
+X_train_arrow = LoadPathImages('Data/TrainingSet/OpenShapes/Arrow/*.bmp')
+y_train_arrow = np.full((X_train_arrow.shape[0]), shapeValueDict['Arrow']) 
+# -----------------------------#
+# -----------------------------#
+# --- --- Load Test Set --- ---#
+# -----------------------------#
+# -----------------------------#
+
+# ---------------------
+# --- Closed shapes --- 
+# ---------------------
+
+# Circle 
+X_test_circle = LoadPathImages('Data/TestSet/ClosedShapes/Circle/*.bmp')
+y_test_circle = np.full((X_test_circle.shape[0]), shapeValueDict['Circle']) 
+
+# Diamond 
+# X_test_diamond = LoadPathImages('Data/TestSet/ClosedShapes/Diamond/*.bmp')
+# y_test_diamond = np.full((X_test_diamond.shape[0]), shapeValueDict['Diamond']) 
+
+# -------------------
+# --- Open shapes --- 
+# ------------------- 
+# Arc
+# X_test_arc = LoadPathImages('Data/TestSet/OpenShapes/Arc/*.bmp')
+# y_test_arc = np.full((X_test_arc.shape[0]), shapeValueDict['Arc']) 
+ 
+# Arrow 
+X_test_arrow = LoadPathImages('Data/TestSet/OpenShapes/Arrow/*.bmp')
+y_test_arrow = np.full((X_test_arrow.shape[0]), shapeValueDict['Arrow']) 
+
+
+####################################################
+# --- Compile training data into single array  --- 
+####################################################
+training_sample_size = 249
+
+# --- Closed shapes --- 
+
+X_train = np.vstack((X_train_circle[0:training_sample_size], X_train_arrow[0:training_sample_size]))
+y_train = np.concatenate((y_train_circle[0:training_sample_size], y_train_arrow[0:training_sample_size]))
+ 
+
+####################################################
+# --- Compile testing data into single array  --- 
+####################################################
+testing_sample_size  = 122
+
+# --- Closed shapes --- 
+X_test = np.vstack((X_test_circle[0:testing_sample_size], X_test_arrow[0:testing_sample_size]))
+y_test = np.concatenate((y_test_circle[0:testing_sample_size], y_test_arrow[0:testing_sample_size]))
+
 
 ################################################
 # --- Image Preprocessing --- 
@@ -272,10 +353,18 @@ print("num classes: {}".format(num_classes))
 # --- Define baseline model ---
 ###########################################
 def baseline_model(init='normal'): 
-	# Create model 
+	# Create model
+	dropoutValue = 0.3
 	model = Sequential()
 	model.add(Dense(num_pixels, input_dim=num_pixels, init=init, activation='relu'))
 	model.add(Dense(2000, input_dim=num_pixels, init=init, activation='relu'))
+	model.add(Dropout(dropoutValue))
+	model.add(Dense(1000, input_dim=num_pixels, init=init, activation='relu'))
+	model.add(Dropout(dropoutValue))
+	model.add(Dense(500, input_dim=num_pixels, init=init, activation='relu'))
+	model.add(Dropout(dropoutValue))
+	model.add(Dense(250, input_dim=num_pixels, init=init, activation='relu'))
+	model.add(Dropout(dropoutValue))
 	model.add(Dense(num_classes, activation='softmax'))
 	# Compile model 
 	# model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=[metrics.categorical_accuracy) 
