@@ -233,12 +233,12 @@ y_test = np.concatenate((y_test, y_test_zigzag[0:testing_sample_size]))
 # ---------------------
 
 # Circle 
-X_train_circle = LoadPathImages('Data/TrainingSet/ClosedShapes/Circle/*.bmp')
-y_train_circle = np.full((X_train_circle.shape[0]), shapeValueDict['Circle']) 
+# X_train_circle = LoadPathImages('Data/TrainingSet/ClosedShapes/Circle/*.bmp')
+# y_train_circle = np.full((X_train_circle.shape[0]), shapeValueDict['Circle']) 
 
 # Diamond 
-# X_train_diamond = LoadPathImages('Data/TrainingSet/ClosedShapes/Diamond/*.bmp')
-# y_train_diamond = np.full((X_train_diamond.shape[0]), shapeValueDict['Diamond']) 
+X_train_diamond = LoadPathImages('Data/TrainingSet/ClosedShapes/Diamond/*.bmp')
+y_train_diamond = np.full((X_train_diamond.shape[0]), shapeValueDict['Diamond']) 
 
 # -------------------
 # --- Open shapes --- 
@@ -261,12 +261,12 @@ y_train_arrow = np.full((X_train_arrow.shape[0]), shapeValueDict['Arrow'])
 # ---------------------
 
 # Circle 
-X_test_circle = LoadPathImages('Data/TestSet/ClosedShapes/Circle/*.bmp')
-y_test_circle = np.full((X_test_circle.shape[0]), shapeValueDict['Circle']) 
+# X_test_circle = LoadPathImages('Data/TestSet/ClosedShapes/Circle/*.bmp')
+# y_test_circle = np.full((X_test_circle.shape[0]), shapeValueDict['Circle']) 
 
 # Diamond 
-# X_test_diamond = LoadPathImages('Data/TestSet/ClosedShapes/Diamond/*.bmp')
-# y_test_diamond = np.full((X_test_diamond.shape[0]), shapeValueDict['Diamond']) 
+X_test_diamond = LoadPathImages('Data/TestSet/ClosedShapes/Diamond/*.bmp')
+y_test_diamond = np.full((X_test_diamond.shape[0]), shapeValueDict['Diamond']) 
 
 # -------------------
 # --- Open shapes --- 
@@ -287,8 +287,8 @@ training_sample_size = 249
 
 # --- Closed shapes --- 
 
-X_train = np.vstack((X_train_circle[0:training_sample_size], X_train_arrow[0:training_sample_size]))
-y_train = np.concatenate((y_train_circle[0:training_sample_size], y_train_arrow[0:training_sample_size]))
+X_train = np.vstack((X_train_diamond[0:training_sample_size], X_train_arrow[0:training_sample_size]))
+y_train = np.concatenate((y_train_diamond[0:training_sample_size], y_train_arrow[0:training_sample_size]))
  
 
 ####################################################
@@ -297,8 +297,8 @@ y_train = np.concatenate((y_train_circle[0:training_sample_size], y_train_arrow[
 testing_sample_size  = 122
 
 # --- Closed shapes --- 
-X_test = np.vstack((X_test_circle[0:testing_sample_size], X_test_arrow[0:testing_sample_size]))
-y_test = np.concatenate((y_test_circle[0:testing_sample_size], y_test_arrow[0:testing_sample_size]))
+X_test = np.vstack((X_test_diamond[0:testing_sample_size], X_test_arrow[0:testing_sample_size]))
+y_test = np.concatenate((y_test_diamond[0:testing_sample_size], y_test_arrow[0:testing_sample_size]))
 
 
 ################################################
