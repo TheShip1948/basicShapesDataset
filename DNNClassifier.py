@@ -7,9 +7,11 @@
 # -------------
 # * 1. Exp: Classifier for only two classes --> this is a problem simplification 
 # * Goal: simplified version for easier investigation 
+# * Result: higher accuracy ~65% but still not high enough
 # 
 # * 2. Exp: Classifier for only one class versus all others 
 # * Goal: other version of the simplification
+# * Result: circle vs all other classes accuracy ~88% impressive but why?  
 # 
 # * 3. Exp: randomly shuffled data instead of all similar images after each other 
 # * Goal: this may affect algorithm results. Test if the order makes the algorithm biased 
@@ -44,12 +46,15 @@ def LoadPathImages(path):
 	return dataArray 
 
 # Shape - value dictionary 
-shapeValueDict = {"Circle": 0,  "Diamond":1 ,"Ellipse":2 ,"Rectangle":3 , "Triangle":4 , "Arc":5 ,"Arrow":6 ,"Line":7 ,"Zigzag":8 }
+# shapeValueDict = {"Circle": 0,  "Diamond":1 ,"Ellipse":2 ,"Rectangle":3 , "Triangle":4 , "Arc":5 ,"Arrow":6 ,"Line":7 ,"Zigzag":8 }
+# 0: means circle 
+# 1: means non-circle
+shapeValueDict = {"Circle": 0,  "Diamond":1 ,"Ellipse":1 ,"Rectangle":1 , "Triangle":1 , "Arc":1 ,"Arrow":1 ,"Line":1 ,"Zigzag":1 } 
 
 # ---------------------
 # --- Closed shapes --- 
 # ---------------------
-"""
+
 # Circle 
 X_train_circle = LoadPathImages('Data/TrainingSet/ClosedShapes/Circle/*.bmp')
 y_train_circle = np.full((X_train_circle.shape[0]), shapeValueDict['Circle']) 
@@ -107,13 +112,12 @@ y_train_line = np.full((X_train_line.shape[0]), shapeValueDict['Line'])
 # Zigzag
 X_train_zigzag = LoadPathImages('Data/TrainingSet/OpenShapes/Zigzag/*.bmp')
 y_train_zigzag = np.full((X_train_zigzag.shape[0]), shapeValueDict['Zigzag']) 
-""" 
+ 
 # --- --- Load Test Set --- --- 
 
 # ---------------------
 # --- Closed shapes --- 
 # ---------------------
-"""
 # Circle 
 X_test_circle = LoadPathImages('Data/TestSet/ClosedShapes/Circle/*.bmp')
 # X_test_circle = LoadPathImages_1('Data/TestSet/ClosedShapes/Circle/*.bmp')
@@ -153,17 +157,21 @@ y_test_line = np.full((X_test_line.shape[0]), shapeValueDict['Line'])
 # Zigzag
 X_test_zigzag = LoadPathImages('Data/TestSet/OpenShapes/Zigzag/*.bmp')
 y_test_zigzag = np.full((X_test_zigzag.shape[0]), shapeValueDict['Zigzag']) 
-""" 
+
 ####################################################
 # --- Compile training data into single array  --- 
 ####################################################
 training_sample_size = 249
 
 # --- Closed shapes --- 
-"""
 X_train = np.vstack((X_train_circle[0:training_sample_size], X_train_diamond[0:training_sample_size]))
+X_train = np.vstack((X_train, X_train_circle[0:training_sample_size]))
+X_train = np.vstack((X_train, X_train_circle[0:training_sample_size])) 
+
 y_train = np.concatenate((y_train_circle[0:training_sample_size], y_train_diamond[0:training_sample_size]))
- 
+y_train = np.concatenate((y_train, y_train_circle[0:training_sample_size]))
+y_train = np.concatenate((y_train, y_train_circle[0:training_sample_size]))
+
 X_train = np.vstack((X_train, X_train_ellipse[0:training_sample_size]))
 y_train = np.concatenate((y_train, y_train_ellipse[0:training_sample_size]))
 
@@ -185,7 +193,7 @@ y_train = np.concatenate((y_train, y_train_line[0:training_sample_size]))
 
 X_train = np.vstack((X_train, X_train_zigzag[0:training_sample_size]))
 y_train = np.concatenate((y_train, y_train_zigzag[0:training_sample_size]))
-""" 
+ 
 # print("Stacking X_train shape: {}".format(X_train.shape))
 # print("Stacking y_train shape: {}".format(y_train.shape))
 
@@ -195,7 +203,7 @@ y_train = np.concatenate((y_train, y_train_zigzag[0:training_sample_size]))
 testing_sample_size  = 122
 
 # --- Closed shapes --- 
-"""
+
 X_test = np.vstack((X_test_circle[0:testing_sample_size], X_test_diamond[0:testing_sample_size]))
 y_test = np.concatenate((y_test_circle[0:testing_sample_size], y_test_diamond[0:testing_sample_size]))
 
@@ -220,14 +228,14 @@ y_test = np.concatenate((y_test, y_test_line[0:testing_sample_size]))
 
 X_test = np.vstack((X_test, X_test_zigzag[0:testing_sample_size]))
 y_test = np.concatenate((y_test, y_test_zigzag[0:testing_sample_size]))
-"""
+
 # print("Stacking X_test shape: {}".format(X_test.shape))
 # print("Stacking y_test shape: {}".format(y_test.shape))
 
 ################################################
 # --- Experimental Data --- 
 ################################################
-
+"""
 # ---------------------
 # --- Closed shapes --- 
 # ---------------------
@@ -299,7 +307,7 @@ testing_sample_size  = 122
 # --- Closed shapes --- 
 X_test = np.vstack((X_test_diamond[0:testing_sample_size], X_test_arrow[0:testing_sample_size]))
 y_test = np.concatenate((y_test_diamond[0:testing_sample_size], y_test_arrow[0:testing_sample_size]))
-
+"""
 
 ################################################
 # --- Image Preprocessing --- 
@@ -380,7 +388,7 @@ model = baseline_model()
 ###########################################
 # --- Fit the model ---
 ###########################################
-model.fit(X_train_resized, y_train, validation_data=(X_test_resized, y_test), nb_epoch=100, batch_size=32, verbose=2)
+model.fit(X_train_resized, y_train, validation_data=(X_test_resized, y_test), nb_epoch=100, batch_size=32, verbose=1)
 
 ###########################################
 # --- Final evaluation ---
