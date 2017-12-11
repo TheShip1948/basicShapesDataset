@@ -112,7 +112,6 @@ generatedImageCountPerRealImage = 20
 GenerateImages(loadPath, savePath, savePrefix, generatedImageCountPerRealImage)
 
 # Generate rectangle images 
-"""
 loadPath = 'Data/TrainingSet/ClosedShapes/Rectangle/*.bmp' 
 savePath = 'AugmentedData/TrainingSet/ClosedShapes/Rectangle/' 
 savePrefix = 'Rectangle' 
@@ -125,13 +124,40 @@ savePath = 'AugmentedData/TrainingSet/ClosedShapes/Triangle/'
 savePrefix = 'Triangle' 
 generatedImageCountPerRealImage = 20
 GenerateImages(loadPath, savePath, savePrefix, generatedImageCountPerRealImage)
-"""
+
 ###########################################
 # --- Generate Open Shapes ---
 ###########################################
+# Generate arc images 
+loadPath = 'Data/TrainingSet/OpenShapes/Arc/*.bmp' 
+savePath = 'AugmentedData/TrainingSet/OpenShapes/Arc/' 
+savePrefix = 'Arc' 
+generatedImageCountPerRealImage = 20
+GenerateImages(loadPath, savePath, savePrefix, generatedImageCountPerRealImage)
 
 
+# Generate arrow images 
+loadPath = 'Data/TrainingSet/OpenShapes/Arrow/*.bmp' 
+savePath = 'AugmentedData/TrainingSet/OpenShapes/Arrow/' 
+savePrefix = 'Arrow' 
+generatedImageCountPerRealImage = 20
+GenerateImages(loadPath, savePath, savePrefix, generatedImageCountPerRealImage)
 
+
+# Generate line images 
+loadPath = 'Data/TrainingSet/OpenShapes/Line/*.bmp' 
+savePath = 'AugmentedData/TrainingSet/OpenShapes/Line/' 
+savePrefix = 'Line' 
+generatedImageCountPerRealImage = 20
+GenerateImages(loadPath, savePath, savePrefix, generatedImageCountPerRealImage)
+
+
+# Generate zigzag images 
+loadPath = 'Data/TrainingSet/OpenShapes/Zigzag/*.bmp' 
+savePath = 'AugmentedData/TrainingSet/OpenShapes/Zigzag/' 
+savePrefix = 'Zigzag' 
+generatedImageCountPerRealImage = 20
+GenerateImages(loadPath, savePath, savePrefix, generatedImageCountPerRealImage)
 
 
 
