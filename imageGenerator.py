@@ -11,48 +11,14 @@
 
 from keras.preprocessing.image import ImageDataGenerator, array_to_img, img_to_array, load_img
 import glob 
-from PIL            		 import Image
-import numpy as np  
-import matplotlib.pyplot as plt  
-# from skimage.color import rgba2rgb 
-from skimage.transform 		 import resize 
-from skimage.transform 		 import downscale_local_mean
+import numpy as np    
+
 ###########################################
 # --- Implementation ---
 ###########################################
-"""
-datagen = ImageDataGenerator(
-        rotation_range=40,
-        width_shift_range=0.2,
-        height_shift_range=0.2,
-        shear_range=0.2,
-        zoom_range=0.2,
-        horizontal_flip=True,
-        fill_mode='nearest')
-
-# img = load_img('Data/TrainingSet/ClosedShapes/Circle/Cir1.bmp')  # this is a PIL image
-img = load_img('Data/TrainingSet/ClosedShapes/Circle/Cir6.bmp')  # this is a PIL image
-x = img_to_array(img)  # this is a Numpy array with shape (3, 150, 150)
-print("image shape = {}".format(x.shape))
-x = x.reshape((1,) + x.shape)  # this is a Numpy array with shape (1, 3, 150, 150)
-
-# the .flow() command below generates batches of randomly transformed images
-# and saves the results to the `preview/` directory
-i = 0
-for batch in datagen.flow(x, batch_size=1,
-                          save_to_dir='AugmentedData/TrainingSet/ClosedShapes/Circle/', save_prefix='Cir', save_format='bmp'):
-    i += 1
-    if i > 20:
-        break  # otherwise the generator would loop indefinitely
-
-"""
-
-
 # Load images in a path, convert them to grayscale images and return numpy array 
 def LoadPathImages(path): 
 	fileList = glob.glob(path)
-	# dataArray = np.array([np.array(Image.fromarray(plt.imread(fileName)).convert('1')) for fileName in fileList])
-	# dataArray = np.array([np.array(Image.fromarray(plt.imread(fileName))) for fileName in fileList])
 	dataArray = np.array([np.array(img_to_array(load_img(fileName))) for fileName in fileList])
 	return dataArray  
 
