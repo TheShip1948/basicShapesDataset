@@ -58,8 +58,9 @@ X_train = np.array([np.array(Image.fromarray(plt.imread(fileName)).convert('1'))
 print("X_train shape: {}".format(X_train.shape))
 """
 
-
+#####################################
 # --- --- Load Training Set --- --- 
+#####################################
 def LoadPathImages(path): 
 	fileList = glob.glob(path)
 	dataArray = np.array([np.array(Image.fromarray(plt.imread(fileName)).convert('1')) for fileName in fileList])
@@ -72,42 +73,42 @@ shapeValueDict = {"Circle": 0,  "Diamond":1 ,"Ellipse":2 ,"Rectangle":3 , "Trian
 # --- Closed shapes --- 
 # ---------------------
 # Circle 
-X_train_circle = LoadPathImages('Data/TrainingSet/ClosedShapes/Circle/*.bmp')
+X_train_circle = LoadPathImages('AugmentedData/TrainingSet/ClosedShapes/Circle/*.bmp')
 y_train_circle = np.full((X_train_circle.shape[0]), shapeValueDict['Circle']) 
 print("X_train shape: {}".format(X_train_circle.shape)) 
 print("y_train shape: {}".format(y_train_circle.shape)) 
 print(y_train_circle[10])
 
 # Diamond 
-X_train_diamond = LoadPathImages('Data/TrainingSet/ClosedShapes/Diamond/*.bmp')
+X_train_diamond = LoadPathImages('AugmentedData/TrainingSet/ClosedShapes/Diamond/*.bmp')
 y_train_diamond = np.full((X_train_diamond.shape[0]), shapeValueDict['Diamond']) 
 print("X_train shape: {}".format(X_train_diamond.shape)) 
 print("y_train shape: {}".format(y_train_diamond.shape)) 
 print(y_train_diamond[10])
 
 # Ellipse 
-X_train_ellipse = LoadPathImages('Data/TrainingSet/ClosedShapes/Ellipse/*.bmp')
+X_train_ellipse = LoadPathImages('AugmentedData/TrainingSet/ClosedShapes/Ellipse/*.bmp')
 y_train_ellipse = np.full((X_train_ellipse.shape[0]), shapeValueDict['Ellipse']) 
 
 # Rectangle 
-X_train_rectangle = LoadPathImages('Data/TrainingSet/ClosedShapes/Rectangle/*.bmp')
+X_train_rectangle = LoadPathImages('AugmentedData/TrainingSet/ClosedShapes/Rectangle/*.bmp')
 y_train_rectangle = np.full((X_train_rectangle.shape[0]), shapeValueDict['Rectangle']) 
 
 # Triangle 
-X_train_triangle = LoadPathImages('Data/TrainingSet/ClosedShapes/Triangle/*.bmp')
+X_train_triangle = LoadPathImages('AugmentedData/TrainingSet/ClosedShapes/Triangle/*.bmp')
 y_train_triangle = np.full((X_train_triangle.shape[0]), shapeValueDict['Triangle']) 
 
 # -------------------
 # --- Open shapes --- 
 # ------------------- 
 # Arc
-X_train_arc = LoadPathImages('Data/TrainingSet/OpenShapes/Arc/*.bmp')
+X_train_arc = LoadPathImages('AugmentedData/TrainingSet/OpenShapes/Arc/*.bmp')
 y_train_arc = np.full((X_train_arc.shape[0]), shapeValueDict['Arc']) 
 print("Arc X_train shape {}".format(X_train_arc.shape))
 print("Arc y_train shape {}".format(y_train_arc.shape))
  
 # Arrow 
-X_train_arrow = LoadPathImages('Data/TrainingSet/OpenShapes/Arrow/*.bmp')
+X_train_arrow = LoadPathImages('AugmentedData/TrainingSet/OpenShapes/Arrow/*.bmp')
 y_train_arrow = np.full((X_train_arrow.shape[0]), shapeValueDict['Arrow']) 
 
 # Line 
@@ -121,15 +122,17 @@ def LoadPathImages_1(path):
 		print("array shape: {},  fileName: {}".format(npArray.shape, fileName))
 	return dataArray 
 
-X_train_line = LoadPathImages('Data/TrainingSet/OpenShapes/Line/*.bmp')
+X_train_line = LoadPathImages('AugmentedData/TrainingSet/OpenShapes/Line/*.bmp')
 # X_train_line = LoadPathImages_1('Data/TrainingSet/OpenShapes/Line/*.bmp')
 y_train_line = np.full((X_train_line.shape[0]), shapeValueDict['Line']) 
 
 # Zigzag
-X_train_zigzag = LoadPathImages('Data/TrainingSet/OpenShapes/Zigzag/*.bmp')
+X_train_zigzag = LoadPathImages('AugmentedData/TrainingSet/OpenShapes/Zigzag/*.bmp')
 y_train_zigzag = np.full((X_train_zigzag.shape[0]), shapeValueDict['Zigzag']) 
 
+#####################################
 # --- --- Load Test Set --- --- 
+#####################################
 
 # ---------------------
 # --- Closed shapes --- 
@@ -293,17 +296,17 @@ print("num classes: {}".format(num_classes))
 ###########################################
 # --- Define baseline model ---
 ###########################################
-def baseline_model(init='normal'): 
+def baseline_model(init='TruncatedNormal'): 
 	# Create model 
 	model = Sequential()
-	model.add(Dense(num_pixels, input_dim=num_pixels, init=init, activation='relu'))
-	model.add(Dense(2000, input_dim=num_pixels, init=init, activation='relu'))
+	model.add(Dense(num_pixels, input_dim=num_pixels, init='RandomNormal', activation='relu'))
+	model.add(Dense(2000, input_dim=num_pixels, init='TruncatedNormal', activation='relu'))
 	#model.add(Dense(50,  init='normal', activation='relu'))
-	# model.add(Dropout(0.2))
-	# model.add(Dense(500, input_dim=num_pixels, init='normal', activation='relu'))
-	# model.add(Dropout(0.2))
-	# model.add(Dense(200, input_dim=num_pixels, init='normal', activation='relu'))
-	# model.add(Dropout(0.2))	
+	model.add(Dropout(0.2))
+	model.add(Dense(500, input_dim=num_pixels, init='normal', activation='relu'))
+	model.add(Dropout(0.2))
+	model.add(Dense(200, input_dim=num_pixels, init='he_normal', activation='relu'))
+	model.add(Dropout(0.2))	
 	# model.add(Dense(num_classes, init='normal', activation='softmax'))
 	# model.add(Convolution2D(32, 3, 3, input_shape=(3, 32, 32), border_mode='same', activation='relu'))
 	# model.add(Convolution2D(32, 3, 3, input_shape=(1, 50, 50), border_mode='same', activation='relu'))
@@ -315,8 +318,8 @@ def baseline_model(init='normal'):
 	# model.add(Dropout(0.5))
 	model.add(Dense(num_classes, activation='softmax'))
 	# Compile model 
-	# model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=[metrics.categorical_accuracy) 
-	model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy']) 	
+	# model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['metrics.categorical_accuracy']) 
+	model.compile(loss='categorical_crossentropy', optimizer='RMSprop', metrics=['accuracy']) 	
 	return model
 
 
@@ -328,7 +331,7 @@ model = baseline_model()
 ###########################################
 # --- Fit the model ---
 ###########################################
-model.fit(X_train_resized, y_train, validation_data=(X_test_resized, y_test), nb_epoch=100, batch_size=32, verbose=2)
+model.fit(X_train_resized, y_train, validation_data=(X_test_resized, y_test), nb_epoch=100, batch_size=8, verbose=2)
 
 ###########################################
 # --- Final evaluation ---
