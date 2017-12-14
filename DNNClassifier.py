@@ -5,7 +5,8 @@
 # * Apply ConvNet Mnist architecture 
 # Experiments: 
 # ------------ 
-# * Image binarization 
+# * Image binarization: binarizing images and removing scaling, enhanced the results with 
+#                       at least 5% 
 ###############################################################################################
 
 
@@ -26,6 +27,7 @@ import glob
 from PIL            		 import Image
 from keras          		 import metrics
 from skimage.transform 		 import resize
+from skimage.filters     import threshold_mean 
 
 ###########################################
 # --- Load data --- 
@@ -60,9 +62,18 @@ print("X_train shape: {}".format(X_train.shape))
 
 
 # --- --- Load Training Set --- --- 
+def BinarizeImage(image): 
+	thresh = threshold_mean(image)
+	binary = image > thresh	
+	return binary
+
 def LoadPathImages(path): 
 	fileList = glob.glob(path)
-	dataArray = np.array([np.array(Image.fromarray(plt.imread(fileName)).convert('1')) for fileName in fileList])
+	# Load images from the directory 
+	# First: convert image to gray scale 
+	# Second: binarize the gray scale images 
+	dataArray = np.array([np.array(BinarizeImage(Image.fromarray(plt.imread(fileName)).convert('1'))) for fileName in fileList])
+	# dataArray = np.array([np.array(Image.fromarray(plt.imread(fileName)).convert('1')) for fileName in fileList])
 	return dataArray 
 
 # Shape - value dictionary 
@@ -278,8 +289,8 @@ print("X_train_resized shape: {}".format(X_train_resized.shape))
 X_train_resized = X_train_resized.astype('float32')
 X_test_resized  = X_test_resized.astype('float32')
 
-X_train_resized = X_train_resized/255 
-X_test_resized  = X_test_resized/255 
+# X_train_resized = X_train_resized/255 
+# X_test_resized  = X_test_resized/255 
 
 ###########################################
 # --- One hot encoding --- 
@@ -299,11 +310,11 @@ def baseline_model(init='normal'):
 	model.add(Dense(num_pixels, input_dim=num_pixels, init=init, activation='relu'))
 	model.add(Dense(2000, input_dim=num_pixels, init=init, activation='relu'))
 	#model.add(Dense(50,  init='normal', activation='relu'))
-	# model.add(Dropout(0.2))
-	# model.add(Dense(500, input_dim=num_pixels, init='normal', activation='relu'))
-	# model.add(Dropout(0.2))
-	# model.add(Dense(200, input_dim=num_pixels, init='normal', activation='relu'))
-	# model.add(Dropout(0.2))	
+	model.add(Dropout(0.2))
+	model.add(Dense(500, input_dim=num_pixels, init='normal', activation='relu'))
+	model.add(Dropout(0.2))
+	model.add(Dense(200, input_dim=num_pixels, init='normal', activation='relu'))
+	model.add(Dropout(0.2))	
 	# model.add(Dense(num_classes, init='normal', activation='softmax'))
 	# model.add(Convolution2D(32, 3, 3, input_shape=(3, 32, 32), border_mode='same', activation='relu'))
 	# model.add(Convolution2D(32, 3, 3, input_shape=(1, 50, 50), border_mode='same', activation='relu'))
