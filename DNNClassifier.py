@@ -7,6 +7,7 @@
 # ------------ 
 # * Image binarization: binarizing images and removing scaling, enhanced the results with 
 #                       at least 5% 
+# * Image thinning: enhanced the results a bit, and more helped for a fast conversion
 ###############################################################################################
 
 
@@ -28,6 +29,7 @@ from PIL            		 import Image
 from keras          		 import metrics
 from skimage.transform 		 import resize
 from skimage.filters     import threshold_mean 
+import skimage.morphology   as morph
 
 ###########################################
 # --- Load data --- 
@@ -71,8 +73,9 @@ def LoadPathImages(path):
 	fileList = glob.glob(path)
 	# Load images from the directory 
 	# First: convert image to gray scale 
-	# Second: binarize the gray scale images 
-	dataArray = np.array([np.array(BinarizeImage(Image.fromarray(plt.imread(fileName)).convert('1'))) for fileName in fileList])
+	# Second: binarize the gray scale images
+	# Third: apply thinning to the result image  
+	dataArray = np.array([np.array(morph.thin(BinarizeImage(Image.fromarray(plt.imread(fileName)).convert('1')))) for fileName in fileList])
 	# dataArray = np.array([np.array(Image.fromarray(plt.imread(fileName)).convert('1')) for fileName in fileList])
 	return dataArray 
 
@@ -310,9 +313,9 @@ def baseline_model(init='normal'):
 	model.add(Dense(num_pixels, input_dim=num_pixels, init=init, activation='relu'))
 	model.add(Dense(2000, input_dim=num_pixels, init=init, activation='relu'))
 	#model.add(Dense(50,  init='normal', activation='relu'))
-	model.add(Dropout(0.2))
+	model.add(Dropout(0.4))
 	model.add(Dense(500, input_dim=num_pixels, init='normal', activation='relu'))
-	model.add(Dropout(0.2))
+	model.add(Dropout(0.3))
 	model.add(Dense(200, input_dim=num_pixels, init='normal', activation='relu'))
 	model.add(Dropout(0.2))	
 	# model.add(Dense(num_classes, init='normal', activation='softmax'))
