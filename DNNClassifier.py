@@ -26,7 +26,9 @@ import glob
 from PIL            		 import Image
 from keras          		 import metrics
 from skimage.transform 		 import resize
-
+from skimage.filters     import threshold_mean 
+import skimage.morphology   as morph
+from quiver_engine               import server
 
 ###########################################
 # --- Load data --- 
@@ -59,11 +61,18 @@ X_train = np.array([np.array(Image.fromarray(plt.imread(fileName)).convert('1'))
 print("X_train shape: {}".format(X_train.shape))
 """
 
+# --- --- Load Training Set --- --- 
+def BinarizeImage(image): 
+	thresh = threshold_mean(image)
+	binary = image > thresh	
+	return binary
+
 
 # --- --- Load Training Set --- --- 
 def LoadPathImages(path): 
 	fileList = glob.glob(path)
 	dataArray = np.array([np.array(Image.fromarray(plt.imread(fileName)).convert('1')) for fileName in fileList])
+	# dataArray = np.array([np.array(morph.thin(BinarizeImage(Image.fromarray(plt.imread(fileName)).convert('1')))) for fileName in fileList])
 	return dataArray 
 
 # Shape - value dictionary 
@@ -313,10 +322,12 @@ def baseline_model():
 	# model.add(Dense(num_classes, init='normal', activation='softmax'))
 	# model.add(Convolution2D(32, 3, 3, input_shape=(3, 32, 32), border_mode='same', activation='relu'))
 	# model.add(Convolution2D(32, 3, 3,  strides=(1, 1), input_shape=(1, 50, 50), padding='same', activation='relu'))
-	model.add(Convolution2D(64, kernel_size=(3, 3), strides=(1, 1), padding='same', input_shape=(1, 50, 50), activation='relu'))
+	model.add(Convolution2D(32, kernel_size=(3, 3), strides=(1, 1), padding='same', input_shape=(1, 50, 50), activation='relu'))
 	model.add(MaxPooling2D(pool_size=(2,2), dim_ordering='th'))	
 	model.add(Convolution2D(32, kernel_size=(3, 3), strides=(1, 1), padding='same', activation='relu'))
 	model.add(MaxPooling2D(pool_size=(2,2), dim_ordering='th'))	
+	# model.add(Convolution2D(128, kernel_size=(2, 2), strides=(1, 1), padding='same', activation='relu'))
+	# model.add(MaxPooling2D(pool_size=(2,2), dim_ordering='th'))	
 	# model.add(Dropout(0.2))
 	#model.add(Convolution2D(32, 3, 3, input_shape=(1, 50, 50), border_mode='same', activation='relu'))	
 	model.add(Flatten())
@@ -340,11 +351,10 @@ def baseline_model():
 ###########################################
 model = baseline_model() 
 
-
 ###########################################
 # --- Fit the model ---
 ###########################################
-model.fit(X_train_resized, y_train, validation_data=(X_test_resized, y_test), nb_epoch=300, batch_size=32, verbose=2)
+model.fit(X_train_resized, y_train, validation_data=(X_test_resized, y_test), nb_epoch=1, batch_size=32, verbose=2)
 
 
 ###########################################
@@ -352,4 +362,36 @@ model.fit(X_train_resized, y_train, validation_data=(X_test_resized, y_test), nb
 ###########################################
 scores = model.evaluate(X_test_resized, y_test, verbose=0) 
 print('Log: score = {} %'.format(scores))
+
+###########################################
+# --- Conv Net visualization ---
+###########################################
+# shapeValueDict = {"Circle": 0,  "Diamond":1 ,"Ellipse":2 ,"Rectangle":3 , "Triangle":4 , "Arc":5 ,"Arrow":6 ,"Line":7 ,"Zigzag":8 }
+# classes=[0, 1, 2, 3, 4, 5, 6, 7, 8]
+classes=['Circle', 'Diamond']
+server.launch(model, ['Circle', 'Diamond'], 1)
+"""
+server.launch(
+        model, # a Keras Model
+
+	classes,        
+	# classes=[0, 1, 2, 3, 4, 5, 6, 7, 8], # list of output classes from the model to present (if not specified 1000 ImageNet classes will be used)
+	
+	1,
+        # top=1, # number of top predictions to show in the gui (default 5)
+
+        # where to store temporary files generatedby quiver (e.g. image files of layers)
+        temp_folder='./tmp',
+
+        # a folder where input images are stored
+        input_folder='./Data/TrainingSet/ClosedShapes/Circle/*',
+
+        # the localhost port the dashboard is to be served on
+        port=5000,
+        # custom data mean
+        # mean=[123.568, 124.89, 111.56],
+        # custom data standard deviation
+        # std=[52.85, 48.65, 51.56]
+  )
+"""
 
