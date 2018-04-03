@@ -8,7 +8,6 @@
 ###########################################
 # --- Imports ---
 ###########################################
-# from keras.datasets import cifar10
 from keras.utils    		 import np_utils 
 import numpy as np 
 from keras.models   		 import Sequential 
@@ -33,7 +32,6 @@ from skimage.transform 		 import resize, downscale_local_mean
 # --- --- Load Training Set --- --- 
 def LoadPathImages(path): 
 	fileList = glob.glob(path)
-	# dataArray = np.array([np.array(Image.fromarray(plt.imread(fileName)).convert('1')) for fileName in fileList])
 	dataArray = np.array([np.array(image.img_to_array(image.load_img(fileName))) for fileName in fileList])
 	return dataArray 
 
@@ -46,16 +44,10 @@ shapeValueDict = {"Circle": 0,  "Diamond":1 ,"Ellipse":2 ,"Rectangle":3 , "Trian
 # Circle 
 X_train_circle = LoadPathImages('Data/TrainingSet/ClosedShapes/Circle/*.bmp')
 y_train_circle = np.full((X_train_circle.shape[0]), shapeValueDict['Circle']) 
-print("X_train shape: {}".format(X_train_circle.shape)) 
-print("y_train shape: {}".format(y_train_circle.shape)) 
-print(y_train_circle[10])
 
 # Diamond 
 X_train_diamond = LoadPathImages('Data/TrainingSet/ClosedShapes/Diamond/*.bmp')
 y_train_diamond = np.full((X_train_diamond.shape[0]), shapeValueDict['Diamond']) 
-print("X_train shape: {}".format(X_train_diamond.shape)) 
-print("y_train shape: {}".format(y_train_diamond.shape)) 
-print(y_train_diamond[10])
 
 # Ellipse 
 X_train_ellipse = LoadPathImages('Data/TrainingSet/ClosedShapes/Ellipse/*.bmp')
@@ -75,8 +67,6 @@ y_train_triangle = np.full((X_train_triangle.shape[0]), shapeValueDict['Triangle
 # Arc
 X_train_arc = LoadPathImages('Data/TrainingSet/OpenShapes/Arc/*.bmp')
 y_train_arc = np.full((X_train_arc.shape[0]), shapeValueDict['Arc']) 
-print("Arc X_train shape {}".format(X_train_arc.shape))
-print("Arc y_train shape {}".format(y_train_arc.shape))
  
 # Arrow 
 X_train_arrow = LoadPathImages('Data/TrainingSet/OpenShapes/Arrow/*.bmp')
@@ -94,7 +84,6 @@ def LoadPathImages_1(path):
 	return dataArray 
 
 X_train_line = LoadPathImages('Data/TrainingSet/OpenShapes/Line/*.bmp')
-# X_train_line = LoadPathImages_1('Data/TrainingSet/OpenShapes/Line/*.bmp')
 y_train_line = np.full((X_train_line.shape[0]), shapeValueDict['Line']) 
 
 # Zigzag
@@ -108,7 +97,6 @@ y_train_zigzag = np.full((X_train_zigzag.shape[0]), shapeValueDict['Zigzag'])
 # ---------------------
 # Circle 
 X_test_circle = LoadPathImages('Data/TestSet/ClosedShapes/Circle/*.bmp')
-# X_test_circle = LoadPathImages_1('Data/TestSet/ClosedShapes/Circle/*.bmp')
 y_test_circle = np.full((X_test_circle.shape[0]), shapeValueDict['Circle']) 
 
 # Diamond 
@@ -177,9 +165,6 @@ y_train = np.concatenate((y_train, y_train_line[0:training_sample_size]))
 X_train = np.vstack((X_train, X_train_zigzag[0:training_sample_size]))
 y_train = np.concatenate((y_train, y_train_zigzag[0:training_sample_size]))
 
-print("Stacking X_train shape: {}".format(X_train.shape))
-print("Stacking y_train shape: {}".format(y_train.shape))
-
 ####################################################
 # --- Compile testing data into single array  --- 
 ####################################################
@@ -211,9 +196,6 @@ y_test = np.concatenate((y_test, y_test_line[0:testing_sample_size]))
 X_test = np.vstack((X_test, X_test_zigzag[0:testing_sample_size]))
 y_test = np.concatenate((y_test, y_test_zigzag[0:testing_sample_size]))
 
-print("Stacking X_test shape: {}".format(X_test.shape))
-print("Stacking y_test shape: {}".format(y_test.shape))
-
 ################################################
 # --- Image Preprocessing --- 
 ################################################
@@ -221,13 +203,8 @@ print("Stacking y_test shape: {}".format(y_test.shape))
 img_row_pixel_count = 50
 img_col_pixel_count = 50
 
-# X_train_resized = np.array([np.array(resize(X_train[imageIndex], (img_row_pixel_count, img_col_pixel_count, 3))) for imageIndex in range(X_train.shape[0])])
 X_train_resized = np.array([np.array(downscale_local_mean(X_train[imageIndex], (5, 5, 1))) for imageIndex in range(X_train.shape[0])])
-print("X_train_resized shape: {}".format(X_train_resized.shape))
-# X_test_resized = np.array([np.array(resize(X_test[imageIndex], (img_row_pixel_count, img_col_pixel_count))) for imageIndex in range(X_test.shape[0])])
 X_test_resized = np.array([np.array(downscale_local_mean(X_test[imageIndex], (5, 5, 1))) for imageIndex in range(X_test.shape[0])])
-print("X_test_resized shape: {}".format(X_test_resized.shape))
-
 
 ################################################
 # --- Fixed seed number for reproducibility --- 
@@ -237,80 +214,21 @@ np.random.seed(seed)
 
 
 ###########################################
-# --- Flatten Input ---
-###########################################
-"""
-num_pixels = X_train_resized.shape[1]*X_train_resized.shape[2]
-print ("num_pixels = {}".format(num_pixels))
-X_train_resized = X_train_resized.reshape(X_train_resized.shape[0], num_pixels).astype('float32')
-X_test_resized  = X_test_resized.reshape(X_test_resized.shape[0], num_pixels).astype('float32')
-print("X_train_resized shape: {}".format(X_train_resized.shape))
-print("X_train_resized shape: {}".format(X_train_resized.shape))
-"""
-
-###########################################
-# --- Normalization --- 
+# --- Convert to float  --- 
 ###########################################
 X_train_resized = X_train_resized.astype('float32')
 X_test_resized  = X_test_resized.astype('float32')
 
-# Will do the step in the image data generator 
-# X_train_resized = X_train_resized/255 
-# X_test_resized  = X_test_resized/255 
-
-
-###########################################
+##########################################
 # --- One hot encoding --- 
 ###########################################
 y_train     = np_utils.to_categorical(y_train)
 y_test      = np_utils.to_categorical(y_test) 
 num_classes = y_test.shape[1]
-print("num classes: {}".format(num_classes))
 
 # --- Reshape input --- 
 X_train_resized = X_train_resized.reshape(X_train_resized.shape[0], 3, X_train_resized.shape[1], X_train_resized.shape[2])
 X_test_resized = X_test_resized.reshape(X_test_resized.shape[0], 3, X_test_resized.shape[1], X_test_resized.shape[2])
-
-###########################################
-# --- Define baseline model ---
-###########################################
-"""
-def baseline_model(): 
-	# Create model 
-	model = Sequential()
-	# model.add(Dense(num_pixels/8, input_dim=num_pixels, init='normal', activation='relu'))
-	# model.add(Dense(2500, input_dim=num_pixels, init='normal', activation='relu'))
-	# model.add(Dense(50,  init='normal', activation='relu'))
-	# model.add(Dropout(0.2))
-	# model.add(Dense(500, input_dim=num_pixels, init='normal', activation='relu'))
-	# model.add(Dropout(0.2))
-	# model.add(Dense(200, input_dim=num_pixels, init='normal', activation='relu'))
-	# model.add(Dropout(0.2))	
-	# model.add(Dense(num_classes, init='normal', activation='softmax'))
-	# model.add(Convolution2D(32, 3, 3, input_shape=(3, 32, 32), border_mode='same', activation='relu'))
-	# model.add(Convolution2D(32, 3, 3,  strides=(1, 1), input_shape=(1, 50, 50), padding='same', activation='relu'))
-	model.add(Convolution2D(64, kernel_size=(3, 3), strides=(1, 1), padding='same', input_shape=(1, 50, 50), activation='relu'))
-	model.add(MaxPooling2D(pool_size=(2,2), dim_ordering='th'))	
-	model.add(Convolution2D(32, kernel_size=(3, 3), strides=(1, 1), padding='same', activation='relu'))
-	model.add(MaxPooling2D(pool_size=(2,2), dim_ordering='th'))	
-	# model.add(Dropout(0.2))
-	#model.add(Convolution2D(32, 3, 3, input_shape=(1, 50, 50), border_mode='same', activation='relu'))	
-	model.add(Flatten())
-	# model.add(Dense(625, activation='relu'))
-	# model.add(Dropout(0.2))
-	model.add(Dense(300, activation='relu'))
-	model.add(Dropout(0.2))
-	model.add(Dense(150, activation='relu'))
-	model.add(Dropout(0.2))
-	model.add(Dense(70, activation='relu'))
-	model.add(Dropout(0.2))
-	# model.add(Dropout(0.5))
-	model.add(Dense(num_classes, activation='softmax'))
-	# Compile model 
-	model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=[metrics.categorical_accuracy]) 
-	return model
-"""
-
 
 ###########################################
 # --- Use Pretrained Model ---
@@ -325,23 +243,11 @@ def save_bottleneck_features(X_train_resized, y_train, X_test_resized, y_test):
     batch_size= 32
 
     # Generate and save training data activation maps 	
-    """
-    X_train_resized = X_train_resized.reshape(X_train_resized.shape[0], X_train_resized.shape[2], X_train_resized.shape[3], 3)
-    generator = datagen.flow(X_train_resized, y_train, batch_size= batch_size, shuffle=False)
-    bottleneck_features_train = model.predict_generator(generator, y_train.shape)
-    np.save(open('bottleneck_features_train.npy', 'w'), bottleneck_features_train)
-    """ 
     X_train_resized = X_train_resized.reshape(X_train_resized.shape[0], X_train_resized.shape[2], X_train_resized.shape[3], 3)
     bottleneck_features_train = model.predict(X_train_resized, batch_size= batch_size, verbose=1)
     np.save(open('bottleneck_features_train.npy', 'w'), bottleneck_features_train)
 
-
     # Generate and save test data activation maps 
-    """
-    generator = datagen.flow(X_test_resized, y_test, batch_size=16, shuffle=False)
-    bottleneck_features_validation = model.predict_generator(generator, y_test.shape)
-    np.save(open('bottleneck_features_validation.npy', 'w'), bottleneck_features_validation)
-    """ 
     X_test_resized = X_test_resized.reshape(X_test_resized.shape[0], X_test_resized.shape[2], X_test_resized.shape[3], 3)
     bottleneck_features_validation = model.predict(X_test_resized, batch_size= batch_size, verbose=1)
     np.save(open('bottleneck_features_validation.npy', 'w'), bottleneck_features_validation)
@@ -367,26 +273,10 @@ def train_top_model():
               epochs=100,
               batch_size=16,
               validation_data=(validation_data, validation_labels))
-    # model.save_weights(top_model_weights_path)
-
 
 # save_bottleneck_features(X_train_resized, y_train, X_test_resized, y_test)
 train_top_model()
-###########################################
-# --- Build the model ---
-###########################################
-# model = baseline_model() 
 
 
-###########################################
-# --- Fit the model ---
-###########################################
-# model.fit(X_train_resized, y_train, validation_data=(X_test_resized, y_test), nb_epoch=300, batch_size=32, verbose=2)
 
-
-###########################################
-# --- Final evaluation ---
-###########################################
-# scores = model.evaluate(X_test_resized, y_test, verbose=0) 
-# print('Log: score = {} %'.format(scores))
 
